@@ -5,7 +5,7 @@ const getUserID = async (email) => {
   const values = [email];
   const { rows } = await pool.query(consulta, values);
 
-  return rows[0].id;
+  return rows[0];
 };
 
 export const helpers = { getUserID };

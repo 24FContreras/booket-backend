@@ -2,7 +2,7 @@ import { pool } from "../database/conexion.js";
 
 const getUser = async (email) => {
   const consulta =
-    "SELECT email, username, avatar, extension FROM usuarios WHERE email = $1";
+    "SELECT email, username, avatar FROM usuarios WHERE email = $1";
   const { rows } = await pool.query(consulta, [email]);
 
   return rows;
