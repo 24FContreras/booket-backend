@@ -15,18 +15,22 @@ const register = async (email, username, password) => {
 };
 
 const authenticate = async (email, password) => {
-  const consulta = "SELECT * FROM usuarios WHERE email = $1";
   const values = [email];
+  const consulta = "SELECT * FROM usuarios WHERE email = $1";
+
   const {
     rows: [usuario],
     rowCount,
   } = await pool.query(consulta, values);
 
-  const { password: encrypted } = usuario;
+  if (!rowCount)
+    throw { code: 401, message: "Este usuario no se encuentra registrado" };
 
-  const passwordEsCorrecta = bcrypt.compareSync(password, encrypted);
+  const { password: encryptedPassword } = usuario;
 
-  if (!passwordEsCorrecta || !rowCount)
+  const passwordEsCorrecta = bcrypt.compareSync(password, encryptedPassword);
+
+  if (!passwordEsCorrecta)
     throw { code: 401, message: "Email o contraseña incorrecta" };
 };
 

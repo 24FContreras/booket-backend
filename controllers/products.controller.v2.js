@@ -8,7 +8,17 @@ import jwt from "jsonwebtoken";
 //OBTENER PUBLICACIONES
 const obtenerPublicaciones = async (req, res) => {
   try {
-    const data = await productsModel.readAll();
+    const data = await productsModel.readAllFiltered(req.query);
+    return res.json(data);
+  } catch (error) {
+    res.status(error.code || 500).send(error);
+  }
+};
+
+//OBTENER PUBLICACIONES FILTRADAS
+const obtenerPublicacionesFiltradas = async (req, res) => {
+  try {
+    const data = await productsModel.readAll(req.query);
     return res.json(data);
   } catch (error) {
     res.status(error.code || 500).send(error);
@@ -21,10 +31,9 @@ const obtenerPublicacion = async (req, res) => {
     const { id } = req.params;
 
     const data = await productsModel.readSingle(id);
-    console.log(data);
 
     if (data.length === 0) {
-      throw new Error("No existe este producto");
+      throw { code: 404, message: "No existe este producto" };
     }
 
     return res.json(data);
@@ -47,7 +56,7 @@ const obtenerPublicacionPropia = async (req, res) => {
     const userID = await helpers.getUserID(email);
 
     if (data.length === 0) {
-      throw new Error("No existe este producto");
+      throw { code: 404, message: "No existe este producto" };
     }
 
     if (userID.id !== data[0].vendedor) {
@@ -69,9 +78,6 @@ const obtenerPublicacionesUsuario = async (req, res) => {
     const { email } = jwt.decode(token);
 
     const userID = await helpers.getUserID(email);
-
-    console.log(userID);
-
     const data = await productsModel.readFromUser(userID.id);
 
     return res.json(data);
@@ -136,6 +142,7 @@ const eliminarPublicacion = async (req, res) => {
 
 export const productsController = {
   obtenerPublicaciones,
+  obtenerPublicacionesFiltradas,
   obtenerPublicacion,
   obtenerPublicacionesUsuario,
   obtenerPublicacionPropia,

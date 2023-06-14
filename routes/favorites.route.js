@@ -1,10 +1,23 @@
 import { Router } from "express";
 import { favoritesController } from "../controllers/favorites.controller.js";
+import verificarToken from "../middlewares/verificarToken.js";
 
 const favoritesRouter = Router();
 
-favoritesRouter.get("/favorites", favoritesController.obtenerFavoritos);
-favoritesRouter.post("/favorites", favoritesController.agregarFavorito);
-favoritesRouter.delete("/favorites", favoritesController.eliminarFavorito);
+favoritesRouter.get(
+  "/favorites",
+  verificarToken,
+  favoritesController.obtenerFavoritos
+);
+favoritesRouter.post(
+  "/favorites",
+  verificarToken,
+  favoritesController.agregarFavorito
+);
+favoritesRouter.delete(
+  "/favorites",
+  verificarToken,
+  favoritesController.eliminarFavorito
+);
 
 export default favoritesRouter;

@@ -1,11 +1,71 @@
 import { pool } from "../database/conexion.js";
+import format from "pg-format";
 
 //GET
-const readAll = async () => {
-  const consulta =
-    "SELECT id, titulo, autor, editorial, paginas, estado, encuadernacion, portada, idioma, stock, precio, descripcion, vendedor, activo FROM productos";
+const readAll = async ({ search = "titulo_", limits = 6, page = 1 }) => {
+  let [field, value] = search.split("_");
 
-  const { rows } = await pool.query(consulta);
+  const offset = (page - 1) * limits;
+
+  const consultaFormateada = format(
+    "SELECT id, titulo, autor, editorial, paginas, estado, encuadernacion, portada, idioma, stock, precio, descripcion, vendedor, activo FROM productos WHERE %s ILIKE '%' || '%s' || '%' ORDER BY titulo ASC LIMIT %s OFFSET %s",
+    field,
+    value,
+    limits,
+    offset
+  );
+
+  const { rows } = await pool.query(consultaFormateada);
+
+  return rows;
+};
+
+//GET FILTERED
+const readAllFiltered = async ({
+  search = "titulo_",
+  limits = 6,
+  page = 1,
+  preciomin,
+  preciomax,
+}) => {
+  let [field, value] = search.split("_");
+  const offset = (page - 1) * limits;
+
+  const filterValues = [];
+  const filterKeys = [];
+
+  if (preciomin) {
+    filterValues.push(`precio >= %s`);
+    filterKeys.push(preciomin);
+  }
+
+  if (preciomax) {
+    filterValues.push(`precio <= %s`);
+    filterKeys.push(preciomin);
+  }
+
+  const consultaStart =
+    "SELECT id, titulo, autor, editorial, paginas, estado, encuadernacion, portada, idioma, stock, precio, descripcion, vendedor, activo FROM productos WHERE %s ILIKE '%' || '%s' || '%' ";
+
+  const consultaEnd = " ORDER BY titulo ASC LIMIT %s OFFSET %s";
+
+  let consulta = "";
+
+  if (filterValues.length) {
+    consulta =
+      consultaStart + " AND " + filterValues.join(" AND ") + consultaEnd;
+  } else consulta = consultaStart + consultaEnd;
+
+  const consultaFormateada = format(
+    consulta,
+    field,
+    value,
+    ...filterKeys,
+    limits,
+    offset
+  );
+
+  const { rows } = await pool.query(consultaFormateada);
 
   return rows;
 };
@@ -80,8 +140,6 @@ const update = async (detalles) => {
   const valoresArray = Object.values(detalles);
   const valores = [valoresArray[0], valoresArray[1], valoresArray[13]];
 
-  //1titulo 2autor 3editorial 4paginas 5estado 6encuadernacion 7portada 8idioma 9stock 10precio 11descripcion 12vendedor 13activo 14id
-
   const consulta = "UPDATE productos SET titulo = $1, autor = $2 WHERE id = $3";
 
   await pool.query(consulta, valores);
@@ -99,6 +157,7 @@ const remove = async (id) => {
 
 export const productsModel = {
   readAll,
+  readAllFiltered,
   readSingle,
   readFromUser,
   create,

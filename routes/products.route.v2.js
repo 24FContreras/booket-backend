@@ -2,7 +2,6 @@ import { Router } from "express";
 import multer from "multer";
 import { productsController } from "../controllers/products.controller.v2.js";
 import verificarToken from "../middlewares/verificarToken.js";
-//import verificarOwnership from "../middlewares/verificarOwnership.js";
 import { helpers } from "../helpers/helpers.js";
 
 const productsRouter = Router();
@@ -27,6 +26,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 productsRouter.get("/products", productsController.obtenerPublicaciones);
+
+productsRouter.get("/products/filter", productsController.obtenerPublicaciones);
+
 productsRouter.get(
   "/products/user",
   productsController.obtenerPublicacionesUsuario

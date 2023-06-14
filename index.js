@@ -27,3 +27,5 @@ app.use("/api", favoritesRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, console.log("🟢 Servidor encendido en el puerto " + PORT));
+
+export default app;
