@@ -8,7 +8,7 @@ const readAll = async ({ search = "titulo_", limits = 6, page = 1 }) => {
   const offset = (page - 1) * limits;
 
   const consultaFormateada = format(
-    "SELECT id, titulo, autor, editorial, paginas, estado, encuadernacion, portada, idioma, stock, precio, descripcion, vendedor, activo, fecha FROM productos WHERE %s ILIKE '%' || '%s' || '%' ORDER BY titulo ASC LIMIT %s OFFSET %s",
+    "SELECT id, titulo, autor, editorial, paginas, estado, encuadernacion, portada, idioma, stock, precio, descripcion, vendedor, activo, fecha FROM productos WHERE %s ILIKE '%' || '%s' || '%' AND activo = true ORDER BY titulo ASC LIMIT %s OFFSET %s",
     field,
     value,
     limits,
