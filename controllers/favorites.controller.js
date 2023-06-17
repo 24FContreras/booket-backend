@@ -14,7 +14,7 @@ const agregarFavorito = async (req, res) => {
 
     await favoritesModel.add(userId.id, productID);
 
-    return res.send("Funcionó");
+    return res.send("Favorito agregado con éxito");
   } catch (error) {
     console.log(error);
     res.status(error.code || 500).send(error);

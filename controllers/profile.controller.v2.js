@@ -1,4 +1,3 @@
-import { helpers } from "../helpers/helpers.js";
 import { profileModel } from "../models/profile.model.js";
 
 const subirFotoPerfil = async (req, res) => {
