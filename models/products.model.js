@@ -134,16 +134,20 @@ const create = async (detalles) => {
 };
 
 //PUT UPDATE
-const update = async (detalles) => {
-  let counter = 0;
-
+const update = async (detalles, id) => {
+  const keysDetalles = Object.keys(detalles);
   const valoresArray = Object.values(detalles);
-  const valores = [valoresArray[0], valoresArray[1], valoresArray[13]];
 
-  const consulta = "UPDATE productos SET titulo = $1, autor = $2 WHERE id = $3";
+  const queryData = keysDetalles.join(` = '%s', `);
 
-  await pool.query(consulta, valores);
-  return "Esto es una prueba exitosa";
+  let consultaInicial = "UPDATE productos SET ";
+  let consultaTail = " = '%s' WHERE id = '%s' RETURNING *";
+
+  let consultaFinal = consultaInicial + queryData + consultaTail;
+
+  let consultaFormateada = format(consultaFinal, ...valoresArray, id);
+
+  await pool.query(consultaFormateada);
 };
 
 //DELETE

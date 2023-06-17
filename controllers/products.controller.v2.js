@@ -108,7 +108,7 @@ const modificarPublicacion = async (req, res) => {
   try {
     const { id } = req.params;
 
-    productsModel.update({ ...req.body, id: id });
+    productsModel.update(req.body, id);
 
     res.json({ estado: "ok", message: "Publicación modificada con éxito" });
   } catch (error) {
