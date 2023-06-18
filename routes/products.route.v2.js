@@ -27,7 +27,10 @@ const upload = multer({ storage: storage });
 
 productsRouter.get("/products", productsController.obtenerPublicaciones);
 
-productsRouter.get("/products/filter", productsController.obtenerPublicaciones);
+productsRouter.get(
+  "/products/search",
+  productsController.obtenerPublicacionesFiltradas
+);
 
 productsRouter.get(
   "/products/user",
