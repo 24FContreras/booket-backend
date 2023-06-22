@@ -28,7 +28,7 @@ describe("Testing rutas products", () => {
 describe("Testing rutas Auth", () => {
   it("POST: Ruta /register devuelve un status 400 al intentar registrar un email ya existente", async () => {
     const response = await request(app).post("/api/register").send({
-      email: "correo1@gmail.com",
+      email: "usuario1@gmail.com",
       password: "pass",
       username: "test1",
     });

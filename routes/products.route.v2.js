@@ -3,6 +3,7 @@ import multer from "multer";
 import { productsController } from "../controllers/products.controller.v2.js";
 import verificarToken from "../middlewares/verificarToken.js";
 import { helpers } from "../helpers/helpers.js";
+import { body } from "express-validator";
 
 const productsRouter = Router();
 
@@ -49,6 +50,28 @@ productsRouter.post(
   "/products",
   verificarToken,
   upload.single("image"),
+  [
+    body("titulo", "El campo 'título' es requerido").trim().notEmpty().escape(),
+    body("autor", "El campo 'autor' es requerido").trim().notEmpty().escape(),
+    body("editorial", "El campo 'editorial' es requerido")
+      .trim()
+      .notEmpty()
+      .escape(),
+    body("paginas", "El campo 'paginas' debe contener un número").isNumeric(),
+
+    body("estado", "Debe seleccionar un estado").trim().notEmpty().escape(),
+    body("encuadernacion", "Debe seleccionar una encuadernación")
+      .trim()
+      .notEmpty()
+      .escape(),
+    body("idioma", "Debe ingresar un idioma").trim().notEmpty().escape(),
+    body("stock", "El campo 'stock' debe contener un número").isNumeric(),
+    body("precio", "El campo 'precio' debe contener un número").isNumeric(),
+    body("descripcion", "Debe incluir una descripcion")
+      .trim()
+      .notEmpty()
+      .escape(),
+  ],
   productsController.crearPublicacion
 );
 

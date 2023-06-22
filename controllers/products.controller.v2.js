@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { productsModel } from "../models/products.model.js";
 import { helpers } from "../helpers/helpers.js";
 import jwt from "jsonwebtoken";
+import { validationResult } from "express-validator";
 
 //OBTENER PUBLICACIONES
 const obtenerPublicaciones = async (req, res) => {
@@ -87,20 +88,39 @@ const obtenerPublicacionesUsuario = async (req, res) => {
 
 //CREAR PUBLICACIÓN
 const crearPublicacion = async (req, res) => {
-  const Authorization = req.header("Authorization");
-  const token = Authorization.split("Bearer ")[1];
-  const { email } = jwt.decode(token);
-  const userID = await helpers.getUserID(email);
-  const bookID = uuidv4();
+  try {
+    const Authorization = req.header("Authorization");
+    const token = Authorization.split("Bearer ")[1];
+    const { email } = jwt.decode(token);
+    const userID = await helpers.getUserID(email);
+    const bookID = uuidv4();
 
-  productsModel.create({
-    ...req.body,
-    vendedor: userID.id,
-    id: "BO-" + bookID,
-    portada: `${req.file.filename}`,
-  });
+    const errors = validationResult(req);
 
-  res.json({ estado: "ok", message: "Publicación creada con éxito" });
+    if (!errors.isEmpty()) {
+      if (!req.file) {
+        errors.errors.push({
+          type: "field",
+          msg: "Debes subir una imagen",
+          path: "cover",
+          location: "file",
+        });
+      }
+
+      return res.json(errors);
+    }
+
+    productsModel.create({
+      ...req.body,
+      vendedor: userID.id,
+      id: "BO-" + bookID,
+      portada: `${req.file.filename}`,
+    });
+
+    res.json({ estado: "ok", message: "Publicación creada con éxito" });
+  } catch (err) {
+    res.json(err);
+  }
 };
 
 //MODIFICAR PUBLICACIÓN
