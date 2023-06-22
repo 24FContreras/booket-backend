@@ -2,8 +2,15 @@ import { config } from "dotenv";
 config();
 import jwt from "jsonwebtoken";
 import { authModel } from "../models/auth.model.js";
+import { validationResult } from "express-validator";
 
 const login = async (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.json(errors);
+  }
+
   try {
     const { email, password } = req.body;
 
@@ -21,6 +28,12 @@ const login = async (req, res) => {
 };
 
 const register = async (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.json(errors);
+  }
+
   try {
     const { email, username, password } = req.body;
     if (!email || !password || !username)
