@@ -16,8 +16,38 @@ const readAll = async ({ search = "titulo_", limits = 6, page = 1 }) => {
   );
 
   const { rows } = await pool.query(consultaFormateada);
+  const { rowCount } = await pool.query(
+    "SELECT * FROM productos WHERE activo = 'true'"
+  );
+
+  console.log(rowCount);
 
   return rows;
+};
+
+const readAllV2 = async ({ search = "titulo_", limits = 6, page = 1 }) => {
+  let [field, value] = search.split("_");
+
+  const offset = (page - 1) * limits;
+
+  const consultaFormateada = format(
+    "SELECT id, titulo, autor, editorial, paginas, estado, encuadernacion, portada, idioma, stock, precio, descripcion, vendedor, activo, fecha FROM productos WHERE %s ILIKE '%' || '%s' || '%' AND activo = 'true' ORDER BY titulo ASC LIMIT %s OFFSET %s",
+    field,
+    value,
+    limits,
+    offset
+  );
+
+  const queryCantidad = format(
+    "SELECT * FROM productos WHERE %s ILIKE '%' || '%s' || '%' AND activo = 'true'",
+    field,
+    value
+  );
+
+  const { rows } = await pool.query(consultaFormateada);
+  const { rowCount } = await pool.query(queryCantidad);
+
+  return { total: rowCount, productos: rows };
 };
 
 //GET FILTERED
@@ -73,7 +103,7 @@ const readAllFiltered = async ({
 //GET
 const readSingle = async (id) => {
   const consulta =
-    "SELECT titulo, autor, editorial, paginas, estado, encuadernacion, portada, idioma, stock, precio, descripcion, vendedor, activo FROM productos WHERE id = $1";
+    "SELECT titulo, autor, editorial, paginas, estado, encuadernacion, portada, idioma, stock, precio, descripcion, usuarios.username AS username, vendedor, activo FROM productos LEFT JOIN usuarios ON usuarios.id = productos.vendedor WHERE productos.id = $1";
 
   const { rows } = await pool.query(consulta, [id]);
 
@@ -161,6 +191,7 @@ const remove = async (id) => {
 
 export const productsModel = {
   readAll,
+  readAllV2,
   readAllFiltered,
   readSingle,
   readFromUser,

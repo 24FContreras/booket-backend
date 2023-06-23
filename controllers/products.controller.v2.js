@@ -8,7 +8,7 @@ import { validationResult } from "express-validator";
 //OBTENER PUBLICACIONES
 const obtenerPublicaciones = async (req, res) => {
   try {
-    const data = await productsModel.readAllFiltered(req.query);
+    const data = await productsModel.readAllV2(req.query);
     return res.json(data);
   } catch (error) {
     res.status(error.code || 500).send(error);
@@ -18,7 +18,7 @@ const obtenerPublicaciones = async (req, res) => {
 //OBTENER PUBLICACIONES FILTRADAS
 const obtenerPublicacionesFiltradas = async (req, res) => {
   try {
-    const data = await productsModel.readAll(req.query);
+    const data = await productsModel.readAllV2(req.query);
     return res.json(data);
   } catch (error) {
     res.status(error.code || 500).send(error);
