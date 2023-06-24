@@ -47,7 +47,11 @@ const readAllV2 = async ({ search = "titulo_", limits = 6, page = 1 }) => {
   const { rows } = await pool.query(consultaFormateada);
   const { rowCount } = await pool.query(queryCantidad);
 
-  return { total: rowCount, productos: rows };
+  return {
+    total: rowCount,
+    paginas: Math.ceil(rowCount / limits),
+    productos: rows,
+  };
 };
 
 //GET FILTERED
