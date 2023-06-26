@@ -10,7 +10,7 @@ const productsRouter = Router();
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     if (file) {
-      cb(null, "./public/images/books/");
+      cb(null, "./public/images/books");
     }
   },
   filename: async (req, file, cb) => {
