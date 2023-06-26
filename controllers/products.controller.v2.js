@@ -51,7 +51,7 @@ const obtenerPublicacionPropia = async (req, res) => {
 
     const token = Authorization.split("Bearer ")[1];
     const { email } = jwt.decode(token);
-    const data = await productsModel.readSingle(id);
+    const data = await productsModel.readSingleForUser(id);
 
     const userID = await helpers.getUserID(email);
 

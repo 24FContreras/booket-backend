@@ -1,7 +1,7 @@
 import { pool } from "../database/conexion.js";
 import format from "pg-format";
 
-//GET
+//GET (V1, DEPRECATED)
 const readAll = async ({ search = "titulo_", limits = 6, page = 1 }) => {
   let [field, value] = search.split("_");
 
@@ -31,7 +31,7 @@ const readAllV2 = async ({ search = "titulo_", limits = 6, page = 1 }) => {
   const offset = (page - 1) * limits;
 
   const consultaFormateada = format(
-    "SELECT id, titulo, autor, editorial, paginas, estado, encuadernacion, portada, idioma, stock, precio, descripcion, vendedor, activo, fecha FROM productos WHERE %s ILIKE '%' || '%s' || '%' AND activo = 'true' ORDER BY titulo ASC LIMIT %s OFFSET %s",
+    "SELECT id, titulo, autor, editorial, paginas, estado, encuadernacion, portada, idioma, stock, precio, descripcion, vendedor, activo, fecha FROM productos WHERE %s ILIKE '%' || '%s' || '%' AND activo = 'true' AND stock > 0 ORDER BY titulo ASC LIMIT %s OFFSET %s",
     field,
     value,
     limits,
@@ -106,6 +106,16 @@ const readAllFiltered = async ({
 
 //GET
 const readSingle = async (id) => {
+  const consulta =
+    "SELECT titulo, autor, editorial, paginas, estado, encuadernacion, portada, idioma, stock, precio, descripcion, usuarios.username AS username, vendedor, activo FROM productos LEFT JOIN usuarios ON usuarios.id = productos.vendedor WHERE productos.id = $1 AND stock > 0";
+
+  const { rows } = await pool.query(consulta, [id]);
+
+  return rows;
+};
+
+//
+const readSingleForUser = async (id) => {
   const consulta =
     "SELECT titulo, autor, editorial, paginas, estado, encuadernacion, portada, idioma, stock, precio, descripcion, usuarios.username AS username, vendedor, activo FROM productos LEFT JOIN usuarios ON usuarios.id = productos.vendedor WHERE productos.id = $1";
 
@@ -198,6 +208,7 @@ export const productsModel = {
   readAllV2,
   readAllFiltered,
   readSingle,
+  readSingleForUser,
   readFromUser,
   create,
   update,

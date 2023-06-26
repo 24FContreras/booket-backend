@@ -8,7 +8,6 @@ CREATE TABLE usuarios(
 	avatar VARCHAR(200) DEFAULT 'default_avatar.png'
 );
 
-
 CREATE TABLE productos(
 	id VARCHAR(200) PRIMARY KEY,
 	titulo VARCHAR(200) NOT NULL,
@@ -34,4 +33,17 @@ CREATE TABLE favoritos(
 	id_producto VARCHAR(200) NOT NULL,
 	CONSTRAINT key_usuario FOREIGN KEY(id_usuario) REFERENCES usuarios(id),
 	CONSTRAINT key_producto FOREIGN KEY(id_producto) REFERENCES productos(id)
+)
+
+CREATE TABLE pagos(
+	id SERIAL PRIMARY KEY,
+	pedido VARCHAR(200) NOT NULL,
+	fecha DATE DEFAULT CURRENT_DATE,
+	vendedor VARCHAR(200) NOT NULL,
+	comprador VARCHAR(200) NOT NULL,
+	producto VARCHAR(200) NOT NULL,
+	cantidad INT NOT NULL,
+	CONSTRAINT key_vendedor FOREIGN KEY(vendedor) REFERENCES usuarios(id),
+	CONSTRAINT key_comprador FOREIGN KEY(comprador) REFERENCES usuarios(id),
+	CONSTRAINT key_producto FOREIGN KEY(producto) REFERENCES productos(id)
 )
