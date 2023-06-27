@@ -15,7 +15,6 @@ import testRouter from "./routes/test.route.js";
 
 //MIDDLEWARE
 app.use(cors());
-app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 

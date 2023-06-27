@@ -2,9 +2,7 @@ import { Router } from "express";
 import multer from "multer";
 import { productsController } from "../controllers/products.controller.v3.js";
 import verificarToken from "../middlewares/verificarToken.js";
-import { helpers } from "../helpers/helpers.js";
 import { body } from "express-validator";
-import { amazonbucketHandler } from "../s3.js";
 
 const productsRouter = Router();
 

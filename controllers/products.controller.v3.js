@@ -1,4 +1,3 @@
-import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 import { productsModel } from "../models/products.model.js";
 import { helpers } from "../helpers/helpers.js";
@@ -126,14 +125,14 @@ const crearPublicacion = async (req, res) => {
     const extension = req.file.mimetype.split("/")[1];
     const newFilename = Date.now();
 
-    productsModel.create({
+    await productsModel.create({
       ...req.body,
       vendedor: userID.id,
       id: "BO-" + bookID,
       portada: `${newFilename}.${extension}`,
     });
 
-    amazonbucketHandler.uploadfileAWS(req.file, newFilename);
+    await amazonbucketHandler.uploadfileAWS(req.file, newFilename);
 
     res.json({ estado: "ok", message: "Publicación creada con éxito" });
   } catch (err) {
@@ -147,7 +146,7 @@ const modificarPublicacion = async (req, res) => {
   try {
     const { id } = req.params;
 
-    productsModel.update(req.body, id);
+    await productsModel.update(req.body, id);
 
     res.json({ estado: "ok", message: "Publicación modificada con éxito" });
   } catch (error) {
@@ -161,7 +160,10 @@ const eliminarPublicacion = async (req, res) => {
   try {
     const { id } = req.params;
 
-    productsModel.remove(id);
+    const deletedItem = await productsModel.remove(id);
+
+    await amazonbucketHandler.deleteFilesAWS(deletedItem);
+
     res.json({ estado: "ok", message: "Publicación eliminada con éxito" });
   } catch (error) {
     console.log(error);

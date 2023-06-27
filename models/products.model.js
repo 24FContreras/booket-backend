@@ -196,11 +196,12 @@ const update = async (detalles, id) => {
 
 //DELETE
 const remove = async (id) => {
-  const consulta = "DELETE FROM productos WHERE id = $1";
+  const consulta = "DELETE FROM productos WHERE id = $1 RETURNING *";
 
-  await pool.query(consulta, [id]);
+  const { rows } = await pool.query(consulta, [id]);
 
-  return "Removido con éxito";
+  console.log(rows);
+  return rows[0];
 };
 
 export const productsModel = {

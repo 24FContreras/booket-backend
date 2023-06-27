@@ -3,6 +3,7 @@ config();
 import {
   PutObjectCommand,
   GetObjectCommand,
+  DeleteObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -50,4 +51,18 @@ const readFilesSWS = async (files) => {
   }
 };
 
-export const amazonbucketHandler = { uploadfileAWS, readFilesSWS };
+const deleteFilesAWS = async (file) => {
+  const deleteObjectParams = {
+    Bucket: bucketName,
+    Key: "books/" + file.portada,
+  };
+
+  const command = new DeleteObjectCommand(deleteObjectParams);
+  await s3.send(command);
+};
+
+export const amazonbucketHandler = {
+  uploadfileAWS,
+  readFilesSWS,
+  deleteFilesAWS,
+};
