@@ -8,7 +8,23 @@ import { amazonbucketHandler } from "../s3.js";
 
 const productsRouter = Router();
 
-const storage = multer.memoryStorage();
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    if (file) {
+      cb(null, "./public/images/books");
+    }
+  },
+  filename: async (req, file, cb) => {
+    if (file) {
+      const userID = await helpers.getUserID(req.body.email);
+      const extension = file.mimetype.split("/")[1];
+      const newName = `${Date.now()}.${extension}`;
+
+      cb(null, newName);
+    }
+  },
+});
+
 const upload = multer({ storage: storage });
 
 productsRouter.get("/products", productsController.obtenerPublicaciones);
