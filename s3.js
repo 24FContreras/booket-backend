@@ -21,10 +21,8 @@ const s3 = new S3Client({
   region: bucketRegion,
 });
 
-const uploadfileAWS = async (file, name) => {
+const uploadBookAWS = async (file, name) => {
   const extension = file.mimetype.split("/")[1];
-
-  console.log(extension);
 
   const params = {
     Bucket: bucketName,
@@ -38,7 +36,7 @@ const uploadfileAWS = async (file, name) => {
   await s3.send(command);
 };
 
-const readFilesSWS = async (files) => {
+const getBookAWS = async (files) => {
   for (const file of files) {
     const getObjectParams = {
       Bucket: bucketName,
@@ -51,7 +49,7 @@ const readFilesSWS = async (files) => {
   }
 };
 
-const deleteFilesAWS = async (file) => {
+const deleteBookAWS = async (file) => {
   const deleteObjectParams = {
     Bucket: bucketName,
     Key: "books/" + file.portada,
@@ -61,8 +59,39 @@ const deleteFilesAWS = async (file) => {
   await s3.send(command);
 };
 
+// AVATARS
+
+const uploadAvatarAWS = async (file, name) => {
+  const extension = file.mimetype.split("/")[1];
+
+  const params = {
+    Bucket: bucketName,
+    Body: file.buffer,
+    Key: `avatars/${name}.${extension}`,
+    ContentType: file.mimetype,
+  };
+
+  const command = new PutObjectCommand(params);
+
+  await s3.send(command);
+};
+
+const getAvatarAWS = async (user) => {
+  const getObjectParams = {
+    Bucket: bucketName,
+    Key: "avatars/" + user.avatar,
+  };
+
+  const command = new GetObjectCommand(getObjectParams);
+  const url = await getSignedUrl(s3, command, { expiresIn: 10000 });
+  user.avatar = url;
+};
+
+//EXPORT
 export const amazonbucketHandler = {
-  uploadfileAWS,
-  readFilesSWS,
-  deleteFilesAWS,
+  uploadBookAWS,
+  getBookAWS,
+  deleteBookAWS,
+  uploadAvatarAWS,
+  getAvatarAWS,
 };

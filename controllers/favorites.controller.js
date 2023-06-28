@@ -3,6 +3,7 @@ config();
 import jwt from "jsonwebtoken";
 import { helpers } from "../helpers/helpers.js";
 import { favoritesModel } from "../models/favorites.model.js";
+import { amazonbucketHandler } from "../s3.js";
 
 const agregarFavorito = async (req, res) => {
   try {
@@ -29,6 +30,8 @@ const obtenerFavoritos = async (req, res) => {
     const userId = await helpers.getUserID(email);
 
     const data = await favoritesModel.getFromUser(userId.id);
+
+    await amazonbucketHandler.getBookAWS(data);
 
     return res.json(data);
   } catch (error) {

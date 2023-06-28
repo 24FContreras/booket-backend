@@ -2,6 +2,7 @@ import { config } from "dotenv";
 config();
 import jwt from "jsonwebtoken";
 import { userModel } from "../models/user.model.js";
+import { amazonbucketHandler } from "../s3.js";
 
 const getUser = async (req, res) => {
   try {
@@ -11,6 +12,8 @@ const getUser = async (req, res) => {
     const { email } = jwt.decode(token);
 
     const user = await userModel.getUser(email);
+
+    await amazonbucketHandler.getAvatarAWS(user);
 
     return res.json(user);
   } catch (error) {

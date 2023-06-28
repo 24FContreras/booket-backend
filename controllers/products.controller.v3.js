@@ -10,7 +10,7 @@ const obtenerPublicaciones = async (req, res) => {
   try {
     const data = await productsModel.readAllV2(req.query);
 
-    await amazonbucketHandler.readFilesSWS(data.productos);
+    await amazonbucketHandler.getBookAWS(data.productos);
 
     return res.json(data);
   } catch (error) {
@@ -23,7 +23,7 @@ const obtenerPublicacionesFiltradas = async (req, res) => {
   try {
     const data = await productsModel.readAllV2(req.query);
 
-    await amazonbucketHandler.readFilesSWS(data.productos);
+    await amazonbucketHandler.getBookAWS(data.productos);
 
     return res.json(data);
   } catch (error) {
@@ -37,7 +37,7 @@ const obtenerPublicacion = async (req, res) => {
     const { id } = req.params;
 
     const data = await productsModel.readSingle(id);
-    await amazonbucketHandler.readFilesSWS(data);
+    await amazonbucketHandler.getBookAWS(data);
 
     if (data.length === 0) {
       throw { code: 404, message: "No existe este producto" };
@@ -70,7 +70,7 @@ const obtenerPublicacionPropia = async (req, res) => {
       throw new Error("Este producto no es del usuario registrado");
     }
 
-    await amazonbucketHandler.readFilesSWS(data);
+    await amazonbucketHandler.getBookAWS(data);
 
     return res.json(data);
   } catch (error) {
@@ -89,7 +89,7 @@ const obtenerPublicacionesUsuario = async (req, res) => {
     const userID = await helpers.getUserID(email);
     const data = await productsModel.readFromUser(userID.id);
 
-    await amazonbucketHandler.readFilesSWS(data);
+    await amazonbucketHandler.getBookAWS(data);
 
     return res.json(data);
   } catch (error) {
@@ -131,7 +131,7 @@ const crearPublicacion = async (req, res) => {
       portada: `${newFilename}.${extension}`,
     });
 
-    await amazonbucketHandler.uploadfileAWS(req.file, newFilename);
+    await amazonbucketHandler.uploadBookAWS(req.file, newFilename);
 
     res.json({ estado: "ok", message: "Publicación creada con éxito" });
   } catch (err) {
@@ -161,7 +161,7 @@ const eliminarPublicacion = async (req, res) => {
 
     const deletedItem = await productsModel.remove(id);
 
-    await amazonbucketHandler.deleteFilesAWS(deletedItem);
+    await amazonbucketHandler.deleteBookAWS(deletedItem);
 
     res.json({ estado: "ok", message: "Publicación eliminada con éxito" });
   } catch (error) {

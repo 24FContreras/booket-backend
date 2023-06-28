@@ -1,5 +1,4 @@
 import { pool } from "../database/conexion.js";
-import { amazonbucketHandler } from "../s3.js";
 
 const add = async (userID, productID) => {
   const consulta =
@@ -14,8 +13,6 @@ const getFromUser = async (userID) => {
     "SELECT productos.id AS id, titulo, autor, portada, estado, editorial FROM favoritos INNER JOIN productos ON favoritos.id_producto = productos.id WHERE id_usuario = $1";
 
   const { rows } = await pool.query(consulta, [userID]);
-
-  await amazonbucketHandler.readFilesSWS(rows);
 
   return rows;
 };
