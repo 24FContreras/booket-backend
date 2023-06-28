@@ -37,7 +37,6 @@ const obtenerPublicacion = async (req, res) => {
     const { id } = req.params;
 
     const data = await productsModel.readSingle(id);
-
     await amazonbucketHandler.readFilesSWS(data);
 
     if (data.length === 0) {
