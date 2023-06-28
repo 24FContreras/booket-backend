@@ -77,6 +77,8 @@ const uploadAvatarAWS = async (file, name) => {
 };
 
 const getAvatarAWS = async (user) => {
+  if (user.avatar === "default_avatar") user.avatar = "default_avatar.png";
+
   const getObjectParams = {
     Bucket: bucketName,
     Key: "avatars/" + user.avatar,

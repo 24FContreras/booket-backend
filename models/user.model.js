@@ -8,12 +8,17 @@ const getUser = async (email) => {
 
   const userID = await helpers.getUserID(email);
 
-  const consultaFavs =
-    "SELECT id_producto FROM favoritos WHERE id_usuario = $1";
+  const { rows: favoritos } = await pool.query(
+    "SELECT id_producto FROM favoritos WHERE id_usuario = $1",
+    [userID.id]
+  );
 
-  const { rows: favoritos } = await pool.query(consultaFavs, [userID.id]);
+  const { rowCount } = await pool.query(
+    "SELECT id FROM productos WHERE vendedor = $1",
+    [userID.id]
+  );
 
-  return { ...usuario[0], favorites: favoritos };
+  return { ...usuario[0], favorites: favoritos, publicaciones: rowCount };
 };
 
 export const userModel = { getUser };
