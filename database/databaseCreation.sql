@@ -24,17 +24,19 @@ CREATE TABLE productos(
 	vendedor VARCHAR(200),
 	activo BOOLEAN DEFAULT 'true',
 	fecha DATE DEFAULT CURRENT_DATE,
-	CONSTRAINT key_usuario FOREIGN KEY(vendedor) REFERENCES usuarios(id)
+	CONSTRAINT key_usuario FOREIGN KEY(vendedor) REFERENCES usuarios(id) ON DELETE CASCADE,
 );
 
 CREATE TABLE favoritos(
 	id SERIAL PRIMARY KEY,
 	id_usuario VARCHAR(200) NOT NULL,
 	id_producto VARCHAR(200) NOT NULL,
-	CONSTRAINT key_usuario FOREIGN KEY(id_usuario) REFERENCES usuarios(id),
-	CONSTRAINT key_producto FOREIGN KEY(id_producto) REFERENCES productos(id)
+	CONSTRAINT key_usuario FOREIGN KEY(id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE,
+	CONSTRAINT key_producto FOREIGN KEY(id_producto) REFERENCES productos(id) ON DELETE CASCADE
 )
 
+
+--not implemented yet
 CREATE TABLE pagos(
 	id SERIAL PRIMARY KEY,
 	pedido VARCHAR(200) NOT NULL,
